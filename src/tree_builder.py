@@ -1,13 +1,9 @@
 import numpy as np
+from collections import Counter
+
+import Tree
 
 POSSIBLE_VALUES = 2
-
-class Tree:
-    def __init__(self, data=None):
-        self.children = []
-        self.data = data
-    def add_child(self, child):
-        self.children.append(child)
 
 # returns a decision tree for a given target label
 def decision_tree_learning(examples, attributes, binary_targets):
@@ -30,7 +26,8 @@ def decision_tree_learning(examples, attributes, binary_targets):
     return tree
 
 def majority_value(binary_values):
-    #TODO
+    data = Counter(binary_targets)
+    return data.most_common(1)
 
 def choose_best_decision_attribute(examples, attributes, binary_targets):
     #TODO
