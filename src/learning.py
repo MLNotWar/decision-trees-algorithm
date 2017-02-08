@@ -1,3 +1,5 @@
+import numpy as np
+
 from tree import Tree
 from ig import majority_value, choose_best_decision_attribute
 from utils import create_attributes
@@ -27,7 +29,7 @@ class DecisionTreeLearning:
     def _learn(self, examples, attributes, binary_targets):
         """ returns a decision tree for a given target label
         """
-        if all(binary_targets == binary_targets[0]):
+        if np.all(binary_targets == binary_targets[0][0]):
             return Tree(binary_targets[0][0])
         elif not attributes.any():
             return Tree(majority_value(binary_targets)[0])
