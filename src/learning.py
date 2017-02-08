@@ -6,7 +6,7 @@ def decision_tree_learning(examples, attributes, binary_targets):
     """ returns a decision tree for a given target label
     """
     if all(binary_targets == binary_targets[0]):
-        return Tree(binary_targets[0])
+        return Tree(binary_targets[0][0])
     elif not attributes.any():
         return Tree(majority_value(binary_targets)[0])
     else:

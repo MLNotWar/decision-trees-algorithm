@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     data = tree.to_data()
     with open(args.output, mode="wb") as f:
-        f.write(pickle.dumps(data))
+        f.write(pickle.dumps(tree))
 
     if args.visualisation:
         visualise(data)
