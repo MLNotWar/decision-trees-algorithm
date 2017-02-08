@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <title>Visualisation</title>
+
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+
+        <style>
+            .node circle {
+                fill: #999;
+            }
+
+            .label {
+                font: 12px sans-serif;
+            }
+
+            .node--internal circle {
+                fill: #555;
+            }
+
+            .node--internal text {
+            }
+
+            .link {
+                fill: none;
+                stroke: #555;
+                stroke-opacity: 0.4;
+                stroke-width: 1px;
+            }
+        </style>
+    </head>
+
+    <body>
+    </body>
+
+    <script>
+        var width = 960,
+            height = 2000;
+
+        var tree = d3.tree().size([height, width - 160]);
+
+        var hierarchy = d3.hierarchy;
+
+        var svg = d3.select("body").append("svg").attr("width", width).attr("height", height),
+            g = svg.append("g")
+              .attr("transform", "translate(40, 0)");
+
+        d3.json("/data", function(error, data) {
+          if (error) throw error;
+
+          var root = tree(hierarchy(data));
+
+          var nodes = root.descendants();
+
+          var link = g.selectAll(".link")
+            .data(nodes.slice(1))
+            .enter().append("g");
+
+          var path = link.append("path")
+            .attr("class", "link")
+            .attr("id", function(d) { return d.data.id; })
+            .attr("d", function(d) {
+              return "M" + d.parent.y + "," + d.parent.x
+                + "C" + (d.y + d.parent.y) / 2 + "," + d.parent.x
+                + " " + (d.y + d.parent.y) / 2 + "," + d.x
+                + " " + d.y + "," + d.x;
+            });
+
+          link.append("text").append("textPath")
+            .attr("xlink:href", function(d) { return "#" + d.data.id; })
+            .attr("class", "label")
+            .style("text-anchor", "middle")
+            .attr("startOffset", "40%")
+            .text(function(d) { return d.data.rule; });
+
+          var node = g.selectAll(".node")
+            .data(nodes)
+            .enter().append("g")
+              .attr("class", function(d) {
+                return "node " + (d.children? "node--internal" : "node--leaf");
+              })
+              .attr("transform", function(d) {
+                return "translate(" + d.y + "," + d.x + ")";
+              });
+
+          node.append("circle")
+            .attr("r", 5);
+
+          node.append("text")
+            .attr("dy", ".3em")
+            .attr("class", "label")
+            .attr("x", function(d) { return d.children? -8 : 8; })
+            .style("text-anchor", function(d) { return d.children? "end" : "start"; })
+            .text(function(d) { return d.data.name; });
+        });
+    </script>
+</html>
