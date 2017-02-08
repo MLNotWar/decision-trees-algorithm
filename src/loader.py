@@ -1,7 +1,8 @@
 from scipy.io import loadmat
 import numpy as np
-from learning import decision_tree_learning
+from learning import DecisionTreeLearning
 import pickle
+
 from visualisation.server import main as visualise
 
 
@@ -21,11 +22,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     examples, binary_targets = load_data(args.data)
-    _, n_attributes = examples.shape
-    attributes = np.full((1, n_attributes), True, dtype=np.bool)
 
-    tree = decision_tree_learning(examples, attributes, binary_targets)
+    algorithm = DecisionTreeLearning()
+    algorithm.fit(examples, binary_targets)
 
+    tree = algorithm.tree
     data = tree.to_data()
     with open(args.output, mode="wb") as f:
         f.write(pickle.dumps(tree))
