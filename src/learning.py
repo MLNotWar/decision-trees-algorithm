@@ -1,7 +1,5 @@
-import numpy as np
 from tree import Tree
-
-POSSIBLE_VALUES = 2
+from ig import majority_value, choose_best_decision_attribute
 
 
 def decision_tree_learning(examples, attributes, binary_targets):
@@ -14,14 +12,17 @@ def decision_tree_learning(examples, attributes, binary_targets):
     else:
         best_attribute = choose_best_decision_attribute(examples, attributes, binary_targets)
         tree = Tree(best_attribute)
-        for i in range(POSSIBLE_VALUES):
-            subtree = Tree()
-            tree.add_child(subtree)
-            new_examples, new_binary_targets = get_revelant_examples(examples, attributes, binary_targets, i)
+        for i in (0, 1):
+            mask = examples[:,best_attribute] == i
+            new_examples = examples[mask]
+            new_binary_targets = binary_targets[mask]
+
             if new_examples.size() == 0:
-                return Tree(majority_value(binary_targets))
+                tree.add_child(i, Tree(majority_value(binary_targets)))
             else:
-                new_attributes = attributes.remove(best_attribute)  # TODO: fix
+                new_attributes = attributes.copy()
+                new_attributes[best_attribute] = False
                 subtree = decision_tree_learning(new_examples, new_attributes, new_binary_targets)
+                tree.add_child(i, subtree)
     return tree
 
