@@ -63,7 +63,7 @@ def main(data, **options):
     def _():
         return jsonify(data)
 
-    app.run(**options, debug=True)
+    app.run(**options)
 
 
 if __name__ == "__main__":
