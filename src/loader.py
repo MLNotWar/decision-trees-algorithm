@@ -1,8 +1,10 @@
 from scipy.io import loadmat
 
+
 def load_data(data_file):
     data = loadmat(data_file)
     return data['x'], data['y']
+
 
 if __name__ == '__main__':
     print('Clean Data:')
