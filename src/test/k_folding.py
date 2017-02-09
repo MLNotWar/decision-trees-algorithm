@@ -8,9 +8,9 @@ class KFoldTest(Test):
         super().__init__(examples, targets)
 
         self.n_folds = n_folds
-        self.testing_masks = self._split_examples()
+        self.testing_masks = self.split_examples()
 
-    def _split_examples(self):
+    def split_examples(self):
         testing_masks = []
         size, _ = self.examples.shape
         n_examples_per_fold = int(size / self.n_folds)
@@ -30,6 +30,7 @@ class KFoldTest(Test):
     def evaluate(self, algorithm):
         for i in range(self.n_folds):
             testing_mask = self.testing_masks[i]
+<<<<<<< HEAD
             algorithm.fit(self.examples[~testing_mask], self.targets[~testing_mask])
             result = algorithm.predict(self.examples[testing_mask])
 
@@ -49,4 +50,20 @@ class KFoldTest(Test):
             elif prediction[0][i] == 0 and prediction[0][i] == 0:
                 self.n_true_negatives += 1
             elif prediction[0][i] == 0 and prediction[0][i] == 1:
+=======
+            algorithm.fit(examples[~testing_mask], binary_targets[~testing_mask])
+            result = algorithm.predict(examples[testing_mask])
+            self._update_ftp(result, binary_targets[~testing_mask])
+
+    def _update_ftp(self, prediction, actual):
+        # TODO check validity of for loop
+        for i in range(prediction[0])
+            if(prediction[0][i] == 1 && prediction[0][i] == 1):
+                self.n_true_positives += 1
+            elif(prediction[0][i] == 1 && prediction[0][i] == 0):
+                self.n_false_positives += 1
+            elif(prediction[0][i] == 0 && prediction[0][i] == 0):
+                self.n_true_negatives += 1
+            elif(prediction[0][i] == 0 && prediction[0][i] == 1):
+>>>>>>> 21577ea61dc246779fd9f7e6e9ff50dd0b33abe8
                 self.n_false_negatives += 1
