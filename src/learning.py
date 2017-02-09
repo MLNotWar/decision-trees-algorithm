@@ -22,13 +22,15 @@ class DecisionTreeLearning:
                             create_attributes(examples.shape),
                             binary_targets)
 
+        self.trees["ag"] = self._learn(examples, create_attributes(examples.shape), targets, values)
+
     def predict(self, examples):
         n_rows, _ = examples.shape
         results = pd.DataFrame(index=range(n_rows), columns=self.trees.keys())
 
         for i in range(n_rows):
             for k, tree in self.trees.items():
-                results[i, k] = self._predict_one(examples[i], tree)
+                results[k][i] = self._predict_one(examples[i], tree)
 
         return results
 
@@ -39,7 +41,8 @@ class DecisionTreeLearning:
 
         return node.data
 
-    def _learn(self, examples, attributes, targets, targets_range=(0, 1)):
+    def _learn(self, examples, attributes, targets,
+               targets_range=(0, 1), attributes_range=(0, 1)):
         """ returns a decision tree for a given target label
         """
         val, count = majority_value(targets)
@@ -50,7 +53,7 @@ class DecisionTreeLearning:
         else:
             best_attribute = choose_best_decision_attribute(examples, attributes, targets, targets_range)
             tree = Tree(best_attribute)
-            for i in targets_range:
+            for i in attributes_range:
                 mask = examples[:, best_attribute] == i
                 new_examples = examples[mask]
                 new_binary_targets = targets[mask]
