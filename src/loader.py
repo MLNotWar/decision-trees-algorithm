@@ -17,7 +17,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Decision Tree Learning.")
     parser.add_argument("data", type=str, help="the data file")
     parser.add_argument("-v", dest="visualisation", help="visualisation", action="store_true")
-    parser.add_argument("-o", dest="output", type=str, default="out", help="output file")
 
     args = parser.parse_args()
 
@@ -26,10 +25,6 @@ if __name__ == '__main__':
     algorithm = DecisionTreeLearning()
     algorithm.fit(examples, binary_targets)
 
-    tree = algorithm.tree
-    data = tree.to_data()
-    with open(args.output, mode="wb") as f:
-        f.write(pickle.dumps(tree))
-
+    trees = {k: v.to_data() for k, v in algorithm.trees.items()}
     if args.visualisation:
-        visualise(data)
+        visualise(trees)

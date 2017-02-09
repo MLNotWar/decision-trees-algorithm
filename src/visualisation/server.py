@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, abort
 
 
 TEST_DATA = {
@@ -52,19 +52,19 @@ def tag(data):
 
 
 def main(data, **options):
-    data = tag(data)
     app = Flask("visualisation")
+    data = {str(k): tag(v) for k, v in data.items()}
 
-    @app.route("/")
-    def index():
-        return render_template("app.html")
+    @app.route("/show/<label>")
+    def index(label):
+        return render_template("app.html", label=label) if label in data else abort(404)
 
-    @app.route("/data")
-    def _():
-        return jsonify(data)
+    @app.route("/data/<label>")
+    def _(label):
+        return jsonify(data[label]) if label in data else abort(404)
 
     app.run(**options)
 
 
 if __name__ == "__main__":
-    main(TEST_DATA)
+    main({"test": TEST_DATA})
