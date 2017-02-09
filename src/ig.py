@@ -14,15 +14,15 @@ def majority_value(binary_targets):
     return mode.mode[0][0], mode.count[0][0]
 
 
-def entropy(binary_targets):
+def entropy(binary_targets, values=range(1, 7)):
     size, _ = binary_targets.shape
-    _, mode_size = majority_value(binary_targets)
 
-    majority_proportion = float(mode_size) / float(size)
-    minority_proportion = 1. - majority_proportion
+    e = 0.
+    for i in values:
+        proportion = float(np.sum(binary_targets == i)) / float(size)
+        e -= short_mul(proportion, lambda: np.log2(proportion))
 
-    return - short_mul(majority_proportion, lambda: np.log2(majority_proportion)) \
-           - short_mul(minority_proportion, lambda: np.log2(minority_proportion))
+    return e
 
 
 def information_gain(examples, binary_targets, attribute):
@@ -45,7 +45,7 @@ def choose_best_decision_attribute(examples, attributes, binary_targets):
     best_gain = float("-inf")
 
     for attribute in np.ndindex(attributes.shape):
-        if attributes[attribute] == 0:
+        if not attributes[attribute]:
             continue
 
         ig = information_gain(examples, binary_targets, attribute[1])

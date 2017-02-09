@@ -29,10 +29,11 @@ class DecisionTreeLearning:
     def _learn(self, examples, attributes, binary_targets):
         """ returns a decision tree for a given target label
         """
-        if np.all(binary_targets == binary_targets[0][0]):
-            return Tree(binary_targets[0][0])
+        val, count = majority_value(binary_targets)
+        if count == binary_targets.shape[0]:
+            return Tree(val)
         elif not attributes.any():
-            return Tree(majority_value(binary_targets)[0])
+            return Tree(val)
         else:
             best_attribute = choose_best_decision_attribute(examples, attributes, binary_targets)
             tree = Tree(best_attribute)
@@ -42,7 +43,7 @@ class DecisionTreeLearning:
                 new_binary_targets = binary_targets[mask]
 
                 if len(new_examples) == 0:
-                    tree.add_child(i, Tree(majority_value(binary_targets)[0]))
+                    tree.add_child(i, Tree(val))
                 else:
                     new_attributes = attributes.copy()
                     new_attributes[:,best_attribute] = False
