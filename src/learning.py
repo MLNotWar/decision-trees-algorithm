@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from tree import Tree
 from ig import majority_value, choose_best_decision_attribute
@@ -22,7 +23,21 @@ class DecisionTreeLearning:
                             binary_targets)
 
     def predict(self, examples):
-        pass  # TODO
+        n_rows, _ = examples.shape
+        results = pd.DataFrame(index=range(n_rows), columns=self.trees.keys())
+
+        for i in range(n_rows):
+            for k, tree in self.trees.items():
+                results[i, k] = self._predict_one(examples[i], tree)
+
+        return results
+
+    def _predict_one(self, example, tree):
+        node = tree
+        while not node.is_leaf():
+            node = node.go(example[node.data])
+
+        return node.data
 
     def _learn(self, examples, attributes, targets, targets_range=(0, 1)):
         """ returns a decision tree for a given target label
