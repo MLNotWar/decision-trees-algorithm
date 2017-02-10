@@ -31,12 +31,12 @@ class KFoldTest(Test):
         for i in range(self.n_folds):
             testing_mask = self.testing_masks[i]
             algorithm.fit(self.examples[~testing_mask], self.targets[~testing_mask])
-            result = algorithm.predict(self.examples[testing_mask])
 
-            print(result)
+            predictions = algorithm.predict(self.examples[testing_mask])
+            expected_result = self.targets[testing_mask]
 
+            print(predictions)
             exit(-1)
-
             # self._update_ftp(result, binary_targets[~testing_mask])
 
     def _update_ftp(self, prediction, actual):
