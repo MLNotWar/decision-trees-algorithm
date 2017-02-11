@@ -1,7 +1,6 @@
 from scipy.io import loadmat
-import numpy as np
 from learning import DecisionTreeLearning
-import pickle
+import pprint
 
 from visualisation.server import main as visualise
 from test.k_folding import KFoldTest
@@ -26,7 +25,8 @@ if __name__ == '__main__':
 
     if args.test:
         test = KFoldTest(examples, binary_targets)
-        test.evaluate(DecisionTreeLearning())
+        confusion_matrix = test.evaluate(DecisionTreeLearning())
+        pprint.pprint(confusion_matrix.generate_report())
     else:
         algorithm = DecisionTreeLearning()
         algorithm.fit(examples, binary_targets)

@@ -36,5 +36,6 @@ class KFoldTest(Test):
 
             predictions = algorithm.predict(self.examples[testing_mask])
             expectations = self.targets[testing_mask]
+
             confusion_matrix.update_data(predictions, expectations)
-        confusion_matrix
+        return confusion_matrix

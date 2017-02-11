@@ -1,11 +1,14 @@
+import numpy as np
+
+
 class ConfusionMatrix:
     def __init__(self, size=6):
-        self.data = [[0 for x in range(size)] for y in range(size)]
+        self.data = np.zeros((size, size))
 
     def update_data(self, predictions, expectations):
         for i in range(len(expectations)):
             for j in range(len(expectations[i])):
-                self.data[expectations[i][j]-1][predictions[i][j]-1] += 1
+                self.data[expectations[i][j] - 1][predictions[i][j] - 1] += 1
 
     def accuracy(self):
         correct_predictions = 0
@@ -19,7 +22,7 @@ class ConfusionMatrix:
         return 1 - self.accuracy()
 
     def class_recall(self, class_num):
-        if 0 > class_num and class_num >= len(self.data):
+        if 0 > class_num >= len(self.data):
             return 0
         true_positive = self.data[class_num][class_num]
         true_found = sum(self.data[class_num])
@@ -32,7 +35,7 @@ class ConfusionMatrix:
         return total / len(self.data)
 
     def class_precision(self, class_num):
-        if 0 > class_num and class_num >= len(self.data):
+        if 0 > class_num >= len(self.data):
             return 0
         true_positive = self.data[class_num][class_num]
         true_expected = 0
@@ -41,11 +44,11 @@ class ConfusionMatrix:
         return true_positive / true_expected if true_expected else 0
 
     def class_score(self, class_num, a=1):
-        if 0 > class_num and class_num >= len(self.data):
+        if 0 > class_num >= len(self.data):
             return 0
         recall = self.class_recall(class_num)
         precision = self.class_precision(class_num)
-        return (1 + a**2) * precision * recall / (a**2 * precision + recall) if recall or precision else 0
+        return (1 + a ** 2) * precision * recall / (a ** 2 * precision + recall) if recall or precision else 0
 
     def generate_report(self):
         report = {
