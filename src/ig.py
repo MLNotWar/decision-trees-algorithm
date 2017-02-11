@@ -14,7 +14,7 @@ def majority_value(binary_targets):
     return mode.mode[0][0], mode.count[0][0]
 
 
-def entropy(binary_targets, values=range(1, 7)):
+def entropy(binary_targets, values):
     size, _ = binary_targets.shape
 
     e = 0.
@@ -25,10 +25,10 @@ def entropy(binary_targets, values=range(1, 7)):
     return e
 
 
-def information_gain(examples, binary_targets, attribute):
-    size_targets, _ = binary_targets.shape
+def information_gain(examples, targets, attribute, targets_range):
+    size_targets, _ = targets.shape
 
-    ed = entropy(binary_targets)
+    ed = entropy(targets, targets_range)
 
     column = examples[:,attribute]
     mask1 = column == 1
@@ -36,11 +36,11 @@ def information_gain(examples, binary_targets, attribute):
     positive_proportion = float(np.count_nonzero(mask1)) / size_targets
     negative_proportion = 1. - positive_proportion
 
-    return ed - short_mul(positive_proportion, lambda: entropy(binary_targets[mask1])) \
-              - short_mul(negative_proportion, lambda: entropy(binary_targets[~mask1]))
+    return ed - short_mul(positive_proportion, lambda: entropy(targets[mask1], targets_range)) \
+              - short_mul(negative_proportion, lambda: entropy(targets[~mask1], targets_range))
 
 
-def choose_best_decision_attribute(examples, attributes, binary_targets):
+def choose_best_decision_attribute(examples, attributes, targets, targets_range=range(2)):
     best_attribute = None
     best_gain = float("-inf")
 
@@ -48,7 +48,7 @@ def choose_best_decision_attribute(examples, attributes, binary_targets):
         if not attributes[attribute]:
             continue
 
-        ig = information_gain(examples, binary_targets, attribute[1])
+        ig = information_gain(examples, targets, attribute[1], targets_range)
         if ig > best_gain:
             best_attribute = attribute[1]
             best_gain = ig

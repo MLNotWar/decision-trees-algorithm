@@ -33,8 +33,8 @@
     </body>
 
     <script>
-        var width = 4000,
-            height = 4000;
+        var width = 1920,
+            height = 1920;
 
         var tree = d3.tree().size([height, width - 160]);
 
@@ -46,7 +46,6 @@
 
         var update = function(data) {
           var root = tree(hierarchy(data));
-          console.log(root)
 
           var nodes = root.descendants();
 
@@ -72,14 +71,16 @@
                 return "#555";
             });
 
+          /*
           link.append("text").append("textPath")
             .attr("xlink:href", function(d) { return "#" + d.data.id; })
             .attr("class", "label")
             .style("text-anchor", "middle")
-            .attr("startOffset", "40%")
+            .attr("startOffset", "65%")
             .text(function(d) {
-              return d.data.rule == 1 || d.data.rule == 0 ? "" : d.data.rule;
+              return d.data.rule;
             });
+            */
 
           var node = g.selectAll(".node")
             .data(nodes)
@@ -103,7 +104,7 @@
             .text(function(d) { return d.data.name; });
         };
 
-        d3.json("/data", function(error, data) {
+        d3.json("/data/{{label}}", function(error, data) {
           if (error) throw error;
 
           update(data);

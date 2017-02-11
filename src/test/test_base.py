@@ -1,16 +1,17 @@
 from utils import create_attributes
 
-METRIC_F1                 = 1
-METRIC_RECALL             = 1 << 1
-METRIC_PRECISION          = 1 << 2
+METRIC_F1 = 1
+METRIC_RECALL = 1 << 1
+METRIC_PRECISION = 1 << 2
 METRIC_ERROR_MEAN_SQUARED = 1 << 3
 
+
 class Test:
-    def __init__(self, examples, binary_targets):
+    def __init__(self, examples, targets):
         self.attributes = create_attributes(examples.shape)
 
         self.examples = examples
-        self.binary_targets = binary_targets
+        self.targets = targets
 
         self.n_true_positives = 0
         self.n_false_positives = 0
@@ -22,6 +23,7 @@ class Test:
 
     def stats(self, metrics):
         pass
+
 
 """
   > test = ...Test()

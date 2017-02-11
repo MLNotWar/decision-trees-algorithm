@@ -6,6 +6,12 @@ class Tree:
     def add_child(self, rule, child):
         self.children[rule] = child
 
+    def go(self, key):
+        return self.children[key]
+
+    def is_leaf(self):
+        return len(self.children) == 0
+
     def to_data(self, rule="null"):
         node = {
             "name": str(self.data),
