@@ -1,6 +1,7 @@
 import numpy as np
 
 from test.test_base import Test
+from test.confusion_matrix import ConfusionMatrix
 
 
 class KFoldTest(Test):
@@ -28,25 +29,12 @@ class KFoldTest(Test):
         return testing_masks
 
     def evaluate(self, algorithm):
+        confusion_matrix = ConfusionMatrix()
         for i in range(self.n_folds):
             testing_mask = self.testing_masks[i]
             algorithm.fit(self.examples[~testing_mask], self.targets[~testing_mask])
 
             predictions = algorithm.predict(self.examples[testing_mask])
-            expected_result = self.targets[testing_mask]
-
-            print(predictions)
-            exit(-1)
-            # self._update_ftp(result, binary_targets[~testing_mask])
-
-    def _update_ftp(self, prediction, actual):
-        # TODO check validity of for loop
-        for i in range(prediction[0]):
-            if prediction[0][i] == 1 and prediction[0][i] == 1:
-                self.n_true_positives += 1
-            elif prediction[0][i] == 1 and prediction[0][i] == 0:
-                self.n_false_positives += 1
-            elif prediction[0][i] == 0 and prediction[0][i] == 0:
-                self.n_true_negatives += 1
-            elif prediction[0][i] == 0 and prediction[0][i] == 1:
-                self.n_false_negatives += 1
+            expectations = self.targets[testing_mask]
+            confusion_matrix.update_data(predictions, expectations)
+        confusion_matrix
