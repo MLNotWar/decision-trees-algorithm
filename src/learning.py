@@ -3,29 +3,18 @@ import pandas as pd
 from collections import defaultdict
 
 from tree import Tree
-from ig import majority_value, choose_best_decision_attribute
-from utils import create_attributes
+from tree_builder import BasicTreeBuilder
 
 
 class DecisionTreeLearning:
-    def __init__(self):
+    def __init__(self, builder=BasicTreeBuilder()):
         super().__init__()
-
         self.trees = {}
+        self.builder = builder
         self.last_results = None
 
     def fit(self, examples, targets):
-        values = np.unique(targets)
-        for value in values.flat:
-            binary_targets = np.vectorize(lambda x: np.int8(x == value))(targets)
-
-            self.trees[value] = \
-                self._learn(examples,
-                            create_attributes(examples.shape),
-                            binary_targets, examples.shape[0])
-
-        self.trees["ag"] = self._learn(examples, create_attributes(examples.shape), targets, examples.shape[0],
-                                       targets_range=values)
+        self.trees = self.builder.build_trees(examples, targets)
 
     def predict(self, examples):
         n_rows, _ = examples.shape
@@ -58,31 +47,3 @@ class DecisionTreeLearning:
             node = node.go(example[node.data])
 
         return node.data
-
-    def _learn(self, examples, attributes, targets, size_examples,
-               targets_range=(0, 1), attributes_range=(0, 1)):
-        """ returns a decision tree for a given target label
-        """
-        val, count = majority_value(targets)
-        error_margin = int(size_examples * 0.015)
-        if count + error_margin >= targets.shape[0]:
-            return Tree(val)
-        elif not attributes.any():
-            return Tree(val)
-        else:
-            best_attribute = choose_best_decision_attribute(examples, attributes, targets, targets_range)
-            tree = Tree(best_attribute)
-            for i in attributes_range:
-                mask = examples[:, best_attribute] == i
-                new_examples = examples[mask]
-                new_binary_targets = targets[mask]
-
-                if len(new_examples) == 0:
-                    tree.add_child(i, Tree(val))
-                else:
-                    new_attributes = attributes.copy()
-                    new_attributes[:, best_attribute] = False
-                    subtree = self._learn(new_examples, new_attributes, new_binary_targets, size_examples,
-                                          targets_range=targets_range, attributes_range=attributes_range)
-                    tree.add_child(i, subtree)
-            return tree
