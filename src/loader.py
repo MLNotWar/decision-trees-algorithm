@@ -1,5 +1,5 @@
 from scipy.io import loadmat
-from learning import DecisionTreeLearning
+from tree_builder import BasicTreeBuilder, PrunedTreeBuilder
 import pprint
 
 from visualisation.server import main as visualise
@@ -25,10 +25,10 @@ if __name__ == '__main__':
 
     if args.test:
         test = KFoldTest(examples, binary_targets)
-        confusion_matrix = test.evaluate(DecisionTreeLearning())
+        confusion_matrix = test.evaluate(BasicTreeBuilder())
         pprint.pprint(confusion_matrix.generate_report())
     else:
-        algorithm = DecisionTreeLearning()
+        algorithm = BasicTreeBuilder()
         algorithm.fit(examples, binary_targets)
 
         trees = {k: v.to_data() for k, v in algorithm.trees.items()}

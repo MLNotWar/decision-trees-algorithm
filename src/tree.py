@@ -12,6 +12,13 @@ class Tree:
     def is_leaf(self):
         return len(self.children) == 0
 
+    def predict(self, example):
+        if hasattr(self, 'pruned'):
+            return self.pruned
+        if self.is_leaf():
+            return self.data
+        return self.go(example[self.data]).predict(example)
+
     def to_data(self, rule="null"):
         node = {
             "name": str(self.data),
