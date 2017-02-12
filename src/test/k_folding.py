@@ -9,10 +9,8 @@ class KFoldTest(Test):
         super().__init__(examples, targets)
 
         self.n_folds = n_folds
-        self.testing_masks = self.split_examples()
 
     def split_examples(self):
-        testing_masks = []
         size, _ = self.examples.shape
         n_examples_per_fold = int(size / self.n_folds)
 
@@ -25,13 +23,11 @@ class KFoldTest(Test):
             else:
                 mask[start:start + n_examples_per_fold] = True
 
-            testing_masks.append(mask)
-        return testing_masks
+            yield mask
 
     def evaluate(self, algorithm):
         confusion_matrix = ConfusionMatrix()
-        for i in range(self.n_folds):
-            testing_mask = self.testing_masks[i]
+        for testing_mask in self.split_examples():
             algorithm.fit(self.examples[~testing_mask], self.targets[~testing_mask])
 
             predictions = algorithm.predict(self.examples[testing_mask])
