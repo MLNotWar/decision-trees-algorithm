@@ -1,9 +1,11 @@
 from abc import ABCMeta, abstractmethod
 import numpy as np
+from random import randint
 
 from tree import Tree
 from ig import majority_value, choose_best_decision_attribute
 from utils import create_attributes
+from predictor import score_predictions
 
 class AbstractTreeBuilder:
     __metaclass__ = ABCMeta
@@ -50,3 +52,51 @@ class BasicTreeBuilder(AbstractTreeBuilder):
                 self._learn(examples, create_attributes(examples.shape), binary_targets, examples.shape[0])
         self.trees["ag"] = self._learn(examples, create_attributes(examples.shape), targets, examples.shape[0], values)
         return trees
+
+class PrunedTreeBuilder(AbstractTreeBuilder):
+    def build_trees(self, examples, targets):
+        size, _ = examples.shape
+        validation_size = size / 10
+        start = randint(0, (size - validation_size))
+        mask = np.full((size,), False, dtype=bool)
+        mask[start:start + validation_size] = True
+
+        trees = {}
+        training = examples[~mask]
+        validation = examples[mask]
+
+        values = np.unique(targets)
+        for value in values.flat:
+            binary_targets = np.vectorize(lambda x: np.int8(x == value))(targets)
+            tree = self._learn(training, create_attributes(training.shape), binary_targets[~mask])
+            trees[value] = prune_tree(tree, validation, binary_targets[mask])
+
+        return trees
+
+
+    def prune_tree(self, tree, examples, targets, targets_range=(0, 1)):
+        max_index = -1
+        max_score = score_predictions(tree, examples, targets)
+
+        index = 0
+        for t in tree:
+            if t.is_leaf():
+                continue
+            for i in targets_range:
+                t.pruned = i
+                score = score_predictions(tree, examples, targets)
+                if score > max_score:
+                    max_index = index
+                    max_score = score
+                index += 1
+            del t.pruned
+
+        if max_index == -1:
+            return tree
+
+        index = max_index / 2
+        for i, t in enumerate(tree):
+            if not t.is_leaf() and i == index:
+                t.data = max_index % 2
+                t.children = {}
+                return prune_tree(t, examples, targets, targets_range)
