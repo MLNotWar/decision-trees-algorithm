@@ -56,20 +56,25 @@ class BasicTreeBuilder(AbstractTreeBuilder):
 class PrunedTreeBuilder(AbstractTreeBuilder):
     def build_trees(self, examples, targets):
         size, _ = examples.shape
-        validation_size = size / 10
+        validation_size = int(size / 10)
         start = randint(0, (size - validation_size))
         mask = np.full((size,), False, dtype=bool)
         mask[start:start + validation_size] = True
 
         trees = {}
-        training = examples[~mask]
-        validation = examples[mask]
+        tr_ex = examples[~mask]
+        va_ex = examples[mask]
+        tr_ta = targets[~mask]
+        va_ta = targets[mask]
 
         values = np.unique(targets)
         for value in values.flat:
-            binary_targets = np.vectorize(lambda x: np.int8(x == value))(targets)
-            tree = self._learn(training, create_attributes(training.shape), binary_targets[~mask])
-            trees[value] = prune_tree(tree, validation, binary_targets[mask])
+            bi_ta = np.vectorize(lambda x: np.int8(x == value))(tr_ta)
+            tree = self._learn(tr_ex, create_attributes(tr_ex.shape), bi_ta)
+            bi_ta = np.vectorize(lambda x: np.int8(x == value))(va_ta)
+            trees[value] = self.prune_tree(tree, va_ex, bi_ta)
+        tree = self._learn(tr_ex, create_attributes(tr_ex.shape), tr_ta, values)
+        trees["ag"] = self.prune_tree(tree, va_ex, va_ta)
 
         return trees
 
@@ -99,4 +104,4 @@ class PrunedTreeBuilder(AbstractTreeBuilder):
             if not t.is_leaf() and i == index:
                 t.data = max_index % 2
                 t.children = {}
-                return prune_tree(t, examples, targets, targets_range)
+                return self.prune_tree(t, examples, targets, targets_range)
