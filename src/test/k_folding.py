@@ -26,10 +26,10 @@ class KFoldTest(Test):
 
             yield mask
 
-    def evaluate(self, algorithm):
+    def evaluate(self, algorithm, optimise=False):
         confusion_matrix = ConfusionMatrix()
         for testing_mask in self.split_examples():
-            trees = algorithm.build_trees(self.examples[~testing_mask], self.targets[~testing_mask])
+            trees = algorithm.build_trees(self.examples[~testing_mask], self.targets[~testing_mask], optimise=optimise)
             predictions = predict(trees, self.examples[testing_mask])
             expectations = self.targets[testing_mask]
 

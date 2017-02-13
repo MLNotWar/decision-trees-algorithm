@@ -50,6 +50,11 @@ class ConfusionMatrix:
         precision = self.class_precision(class_num)
         return (1 + a ** 2) * precision * recall / (a ** 2 * precision + recall) if recall or precision else 0
 
+    def normalise(self):
+        row_sums = self.data.sum(axis=1)
+        normalised_matrix = self.data / row_sums[:, np.newaxis]
+        self.data = normalised_matrix
+
     def generate_report(self):
         report = {
             "confusion_matrix": self.data,

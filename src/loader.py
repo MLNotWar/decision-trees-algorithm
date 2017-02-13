@@ -19,6 +19,7 @@ if __name__ == '__main__':
     parser.add_argument("data", type=str, help="the data file")
     parser.add_argument("-v", dest="visualisation", help="visualisation", action="store_true")
     parser.add_argument("-t", dest="test", action="store_true")
+    parser.add_argument("-n", dest="normalise", action="store_true")
     parser.add_argument("-p", dest="prune", action="store_true")
     parser.add_argument("-o", dest="optimise", action="store_true")
     parser.add_argument("-s", action="store_true", dest="save", help="save output as Matlab file (in out/)")
@@ -30,7 +31,9 @@ if __name__ == '__main__':
 
     if args.test:
         test = KFoldTest(examples, binary_targets)
-        confusion_matrix = test.evaluate(builder)
+        confusion_matrix = test.evaluate(builder, optimise=args.optimise)
+        if args.normalise:
+            confusion_matrix.normalise()
         pprint.pprint(confusion_matrix.generate_report())
 
         exit(0)
@@ -50,4 +53,3 @@ if __name__ == '__main__':
         trees = {k: v.to_data() for k, v in trees.items()}
         if args.visualisation:
             visualise(trees)
-
