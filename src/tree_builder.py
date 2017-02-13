@@ -59,9 +59,9 @@ class BasicTreeBuilder(AbstractTreeBuilder):
 
 
 class PrunedTreeBuilder(AbstractTreeBuilder):
-    def build_trees(self, examples, targets, optimise=False):
+    def build_trees(self, examples, targets, optimise=False, validation_perc=0.05):
         size, _ = examples.shape
-        validation_size = int(size / 10)
+        validation_size = int(size * validation_perc)
         start = randint(0, (size - validation_size))
         mask = np.full((size,), False, dtype=bool)
         mask[start:start + validation_size] = True
