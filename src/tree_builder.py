@@ -78,7 +78,7 @@ class PrunedTreeBuilder(AbstractTreeBuilder):
             tree = self._learn(tr_ex, create_attributes(tr_ex.shape), bi_ta, size if optimise else 0)
             bi_ta = np.vectorize(lambda x: np.int8(x == value))(va_ta)
             trees[value] = self.prune_tree(tree, va_ex, bi_ta)
-        tree = self._learn(tr_ex, create_attributes(tr_ex.shape), tr_ta, values)
+        tree = self._learn(tr_ex, create_attributes(tr_ex.shape), tr_ta, size if optimise else 0, values)
         trees["ag"] = self.prune_tree(tree, va_ex, va_ta)
 
         return trees
