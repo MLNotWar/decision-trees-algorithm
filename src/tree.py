@@ -1,3 +1,5 @@
+import numpy as np
+
 class Tree:
     def __init__(self, data):
         self.children = {}
@@ -45,3 +47,21 @@ class Tree:
                 children.append(t.to_data(r))
 
         return node
+
+    def to_matlab(self):
+        if len(self.children) == 0:
+            return {
+                # "op": None,
+                "kids": np.zeros((0, 0), dtype=np.object),
+                "class": self.data
+            }
+        else:
+            kids = np.zeros((1, 2), dtype=np.object)
+            kids[0][0] = self.children[0].to_matlab()
+            kids[0][1] = self.children[1].to_matlab()
+
+            return {
+                "op": self.data,
+                "kids": kids
+                # "class": None
+            }

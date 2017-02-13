@@ -7,6 +7,7 @@ from ig import majority_value, choose_best_decision_attribute
 from utils import create_attributes
 from predictor import score_predictions
 
+
 class AbstractTreeBuilder:
     __metaclass__ = ABCMeta
 
@@ -37,7 +38,8 @@ class AbstractTreeBuilder:
                 else:
                     new_attributes = attributes.copy()
                     new_attributes[:, best_attribute] = False
-                    subtree = self._learn(new_examples, new_attributes, new_binary_targets, size_examples, targets_range, attributes_range)
+                    subtree = self._learn(new_examples, new_attributes, new_binary_targets, size_examples,
+                                          targets_range, attributes_range)
                     tree.add_child(i, subtree)
             return tree
 
@@ -50,8 +52,9 @@ class BasicTreeBuilder(AbstractTreeBuilder):
             binary_targets = np.vectorize(lambda x: np.int8(x == value))(targets)
             trees[value] = \
                 self._learn(examples, create_attributes(examples.shape), binary_targets, examples.shape[0])
-        self.trees["ag"] = self._learn(examples, create_attributes(examples.shape), targets, examples.shape[0], values)
+        trees["ag"] = self._learn(examples, create_attributes(examples.shape), targets, examples.shape[0], values)
         return trees
+
 
 class PrunedTreeBuilder(AbstractTreeBuilder):
     def build_trees(self, examples, targets):
@@ -77,7 +80,6 @@ class PrunedTreeBuilder(AbstractTreeBuilder):
         trees["ag"] = self.prune_tree(tree, va_ex, va_ta)
 
         return trees
-
 
     def prune_tree(self, tree, examples, targets, targets_range=(0, 1)):
         max_index = -1
