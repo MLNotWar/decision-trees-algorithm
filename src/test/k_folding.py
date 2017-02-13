@@ -1,6 +1,7 @@
 import numpy as np
 
 from test.test_base import Test
+from predictor import predict
 from test.confusion_matrix import ConfusionMatrix
 
 
@@ -28,9 +29,8 @@ class KFoldTest(Test):
     def evaluate(self, algorithm):
         confusion_matrix = ConfusionMatrix()
         for testing_mask in self.split_examples():
-            algorithm.fit(self.examples[~testing_mask], self.targets[~testing_mask])
-
-            predictions = algorithm.predict(self.examples[testing_mask])
+            trees = algorithm.build_trees(self.examples[~testing_mask], self.targets[~testing_mask])
+            predictions = predict(trees, self.examples[testing_mask])
             expectations = self.targets[testing_mask]
 
             confusion_matrix.update_data(predictions, expectations)
