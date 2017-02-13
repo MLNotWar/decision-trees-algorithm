@@ -22,9 +22,10 @@ class DecisionTreeLearning:
             self.trees[value] = \
                 self._learn(examples,
                             create_attributes(examples.shape),
-                            binary_targets)
+                            binary_targets, examples.shape[0])
 
-        self.trees["ag"] = self._learn(examples, create_attributes(examples.shape), targets, values)
+        self.trees["ag"] = self._learn(examples, create_attributes(examples.shape), targets, examples.shape[0],
+                                       targets_range=values)
 
     def predict(self, examples):
         n_rows, _ = examples.shape
@@ -58,12 +59,13 @@ class DecisionTreeLearning:
 
         return node.data
 
-    def _learn(self, examples, attributes, targets,
+    def _learn(self, examples, attributes, targets, size_examples,
                targets_range=(0, 1), attributes_range=(0, 1)):
         """ returns a decision tree for a given target label
         """
         val, count = majority_value(targets)
-        if count == targets.shape[0]:
+        error_margin = int(size_examples * 0.015)
+        if count + error_margin >= targets.shape[0]:
             return Tree(val)
         elif not attributes.any():
             return Tree(val)
@@ -80,6 +82,7 @@ class DecisionTreeLearning:
                 else:
                     new_attributes = attributes.copy()
                     new_attributes[:, best_attribute] = False
-                    subtree = self._learn(new_examples, new_attributes, new_binary_targets)
+                    subtree = self._learn(new_examples, new_attributes, new_binary_targets, size_examples,
+                                          targets_range=targets_range, attributes_range=attributes_range)
                     tree.add_child(i, subtree)
             return tree
