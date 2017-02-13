@@ -12,7 +12,7 @@ class AbstractTreeBuilder:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def build_trees(self, examples, targets):
+    def build_trees(self, examples, targets, optimise=False):
         return {}
 
     def _learn(self, examples, attributes, targets, size_examples,
@@ -45,19 +45,21 @@ class AbstractTreeBuilder:
 
 
 class BasicTreeBuilder(AbstractTreeBuilder):
-    def build_trees(self, examples, targets):
+    def build_trees(self, examples, targets, optimise=False):
         trees = {}
         values = np.unique(targets)
         for value in values.flat:
             binary_targets = np.vectorize(lambda x: np.int8(x == value))(targets)
             trees[value] = \
-                self._learn(examples, create_attributes(examples.shape), binary_targets, examples.shape[0])
-        trees["ag"] = self._learn(examples, create_attributes(examples.shape), targets, examples.shape[0], values)
+                self._learn(examples, create_attributes(examples.shape), binary_targets,
+                            examples.shape[0] if optimise else 0)
+        trees["ag"] = self._learn(examples, create_attributes(examples.shape), targets,
+                                  examples.shape[0] if optimise else 0, values)
         return trees
 
 
 class PrunedTreeBuilder(AbstractTreeBuilder):
-    def build_trees(self, examples, targets):
+    def build_trees(self, examples, targets, optimise=False):
         size, _ = examples.shape
         validation_size = int(size / 10)
         start = randint(0, (size - validation_size))

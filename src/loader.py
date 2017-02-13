@@ -20,7 +20,8 @@ if __name__ == '__main__':
     parser.add_argument("-v", dest="visualisation", help="visualisation", action="store_true")
     parser.add_argument("-t", dest="test", action="store_true")
     parser.add_argument("-p", dest="prune", action="store_true")
-    parser.add_argument("-o", action="store_true", dest="output", help="output as Matlab file")
+    parser.add_argument("-o", dest="optimise", action="store_true")
+    parser.add_argument("-s", action="store_true", dest="save", help="save output as Matlab file (in out/)")
 
     args = parser.parse_args()
 
@@ -34,9 +35,9 @@ if __name__ == '__main__':
 
         exit(0)
 
-    trees = builder.build_trees(examples, binary_targets)
+    trees = builder.build_trees(examples, binary_targets, optimise=args.optimise)
 
-    if args.output:
+    if args.save:
         if not os.path.exists("out/"):
             os.mkdir("out")
 
