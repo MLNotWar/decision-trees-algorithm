@@ -52,6 +52,7 @@ class ConfusionMatrix:
 
     def generate_report(self):
         report = {
+            "confusion_matrix": self.data,
             "UAR": self.unweighted_average_recall(),
             "accuracy": self.accuracy(),
             "error_rate": self.error_rate(),
